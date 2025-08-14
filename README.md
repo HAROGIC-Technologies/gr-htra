@@ -34,8 +34,8 @@ sudo sh install_htraapi_lib.sh
 git clone https://github.com/HAROGIC-Technologies/gr-htra.git
 ```
 3. Copy the calibration file(s)
-   - Copy the calibration file(s) for your device from the included USB drive into the `gr-htra/CalFile` folder.
-   - Then install the calibration file(s) system-wide.
+  - Copy the calibration file(s) for your device from the included USB drive into the `gr-htra/CalFile` folder.
+  - Then install the calibration file(s) system-wide.
 ```bash
 cd gr-htra
 sudo sh install_lib.sh
