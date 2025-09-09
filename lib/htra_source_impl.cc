@@ -58,7 +58,7 @@ htra_source_impl::htra_source_impl(float center_freq,float sample_rate, float de
     
 
     // Allocate Ring Buffer
-    d_ring_buffer.resize(16242*128); 
+    d_ring_buffer.resize(16242*512); 
     
     //Trigger Start of Acquisition
     Status = IQS_BusTriggerStart(&d_device);
@@ -283,6 +283,7 @@ void htra_source_impl::_rx_thread()
             
 	    // When the ring buffer is full, reset read and write indices to restart from the beginning.
             if (d_valid_data_count + buffer.size() > d_ring_buffer.size()) {
+                std::cerr << "T";
                 d_valid_data_count = 0;
                 d_read_index = 0;
                 d_write_index = 0;
@@ -343,5 +344,4 @@ gr::basic_block_sptr htra_source_impl::to_basic_block()
 
 } // namespace htra_device
 } // namespace gr
-
 
