@@ -9,13 +9,13 @@ namespace gr {
 namespace htra_device {
 
 htra_source::sptr htra_source::make(
-    float center_freq,float sample_rate, float decim_factor, float ref_level)
+    float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level)
 {
     return gnuradio::make_block_sptr<htra_source_impl>(
         center_freq, sample_rate, decim_factor, ref_level);
 }
 
-htra_source_impl::htra_source_impl(float center_freq,float sample_rate, float decim_factor, float ref_level)
+htra_source_impl::htra_source_impl(float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level)
     : gr::sync_block("htra_source",
           gr::io_signature::make(0, 0, 0),
           gr::io_signature::make(1, 1, sizeof(gr_complex))),
@@ -44,7 +44,7 @@ htra_source_impl::htra_source_impl(float center_freq,float sample_rate, float de
     
     IQS_ProfileIn.CenterFreq_Hz = d_center_freq;
     IQS_ProfileIn.RefLevel_dBm = d_ref_level;
-    IQS_ProfileIn.DecimateFactor = d_decim_factor;
+    IQS_ProfileIn.DecimateFactor = static_cast<int>(d_decim_factor);
     IQS_ProfileIn.DataFormat = Complex16bit;
     IQS_ProfileIn.TriggerSource = Bus;
     IQS_ProfileIn.TriggerMode = Adaptive;
@@ -151,7 +151,7 @@ void htra_source_impl::set_ref_level(float level)
     d_buffer_cv.notify_all();
 }
 
-void htra_source_impl::set_decim_factor(float decim)
+void htra_source_impl::set_decim_factor(DecimationFactor decim)
 {
     {
         std::lock_guard<std::mutex> lock(d_buffer_mutex);
@@ -344,4 +344,5 @@ gr::basic_block_sptr htra_source_impl::to_basic_block()
 
 } // namespace htra_device
 } // namespace gr
+
 
