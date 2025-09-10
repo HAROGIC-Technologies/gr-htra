@@ -15,7 +15,8 @@ class htra_source_impl : public htra_source
 {
 private:
     void* d_device;                          
-    float d_center_freq, d_sample_rate, d_decim_factor, d_ref_level;
+    float d_center_freq, d_sample_rate, d_ref_level;
+    DecimationFactor d_decim_factor;
     IQS_Profile_TypeDef d_profile_out;    
     IQS_StreamInfo_TypeDef d_stream_info;  
     IQS_Profile_TypeDef IQS_ProfileIn;
@@ -38,14 +39,13 @@ private:
     void _rx_thread();
 
 public:
-    htra_source_impl(float center_freq,float sample_rate, float decim_factor, float ref_level);
+    htra_source_impl(float center_freq,float sample_rate, DecimationFactor decim, float ref_level);
     ~htra_source_impl();
     
     void set_sample_rate(float rate) override;
     void set_center_freq(float freq) override;
     void set_ref_level(float level) override;
-    void set_decim_factor(float decim) override;
-
+    void set_decim_factor(DecimationFactor decim) override;
 
     // Start the data acquisition stream
     int activateStream() override;
