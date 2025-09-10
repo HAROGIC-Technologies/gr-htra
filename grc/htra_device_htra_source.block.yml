@@ -1,16 +1,16 @@
+---
 id: htra_source
-label: 'HTRA: IQ Source'
-category: '[HTRA]'
-
+label: "HTRA: IQ Source"
+category: "[HTRA]"
 templates:
-  imports: "import htra_source"  
-  make: htra_source.htra_source(${center_freq}, ${sample_rate}, ${decim_factor}, ${ref_level})
+  imports: import htra_source
+  make: htra_source.htra_source(${center_freq}, ${sample_rate}, ${decim_factor},
+    ${ref_level})
   callbacks:
     - set_center_freq(${center_freq})
     - set_sample_rate(${sample_rate})
     - set_decim_factor(${decim_factor})
     - set_ref_level(${ref_level})
-
 parameters:
   - id: center_freq
     label: Center Frequency (Hz)
@@ -24,17 +24,27 @@ parameters:
     label: Decimation Factor
     dtype: float
     default: 2
+    options:
+      - 1
+      - 2
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
+      - 2048
+      - 4096
   - id: ref_level
     label: Reference Level (dBm)
     dtype: float
     default: 0
-
 inputs: []
-
 outputs:
   - label: out
     domain: stream
     dtype: complex
-
 file_format: 1
-
