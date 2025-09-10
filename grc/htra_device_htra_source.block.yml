@@ -1,15 +1,13 @@
----
 id: htra_source
 label: "HTRA: IQ Source"
 category: "[HTRA]"
 templates:
   imports: import htra_source
-  make: htra_source.htra_source(${center_freq}, ${sample_rate}, ${decim_factor},
-    ${ref_level})
+  make: htra_source.htra_source(${center_freq}, ${sample_rate}, htra_source.DecimationFactor.${decim_factor}, ${ref_level})
   callbacks:
     - set_center_freq(${center_freq})
     - set_sample_rate(${sample_rate})
-    - set_decim_factor(${decim_factor})
+    - set_decim_factor(htra_source.DecimationFactor.${decim_factor})
     - set_ref_level(${ref_level})
 parameters:
   - id: center_freq
@@ -22,22 +20,36 @@ parameters:
     default: 122880000
   - id: decim_factor
     label: Decimation Factor
-    dtype: float
-    default: 2
+    dtype: enum
+    default: DECIM_2
     options:
-      - 1
-      - 2
-      - 4
-      - 8
-      - 16
-      - 32
-      - 64
-      - 128
-      - 256
-      - 512
-      - 1024
-      - 2048
-      - 4096
+      - DECIM_1
+      - DECIM_2
+      - DECIM_4
+      - DECIM_8
+      - DECIM_16
+      - DECIM_32
+      - DECIM_64
+      - DECIM_128
+      - DECIM_256
+      - DECIM_512
+      - DECIM_1024
+      - DECIM_2048
+      - DECIM_4096
+    option_labels:
+      - "1 (No decimation)"
+      - "2"
+      - "4"
+      - "8"
+      - "16"
+      - "32"
+      - "64"
+      - "128"
+      - "256"
+      - "512"
+      - "1024"
+      - "2048"
+      - "4096"
   - id: ref_level
     label: Reference Level (dBm)
     dtype: float
