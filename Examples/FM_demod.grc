@@ -55,35 +55,17 @@ blocks:
     rotation: 0
     state: true
 - name: decimate_factor
-  id: variable_qtgui_chooser
+  id: variable
   parameters:
     comment: ''
-    gui_hint: 2,0
-    label: Decimate_Factor
-    label0: ''
-    label1: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    labels: '[]'
-    num_opts: '0'
-    option0: '0'
-    option1: '1'
-    option2: '2'
-    option3: '3'
-    option4: '4'
-    options: '[1,2,4,8,16,32,64,128,256,512,1024,2048,4096]'
-    orient: Qt.QVBoxLayout
-    type: int
     value: '64'
-    widget: combo_box
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [488, 12.0]
     rotation: 0
-    state: enabled
+    state: true
 - name: reference_level
   id: variable_qtgui_range
   parameters:
@@ -102,7 +84,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 12.0]
+    coordinate: [616, 12.0]
     rotation: 0
     state: true
 - name: sample_rate
@@ -190,7 +172,7 @@ blocks:
     alias: ''
     center_freq: center_freq
     comment: ''
-    decim_factor: decimate_factor
+    decim_factor: DECIM_64
     maxoutbuf: '0'
     minoutbuf: '0'
     ref_level: reference_level
@@ -375,3 +357,4 @@ connections:
 
 metadata:
   file_format: 1
+  grc_version: 3.10.7.0

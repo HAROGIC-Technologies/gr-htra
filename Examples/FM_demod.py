@@ -6,43 +6,30 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Not titled yet
-# GNU Radio version: 3.10.1.1
+# GNU Radio version: 3.10.7.0
 
 from packaging.version import Version as StrictVersion
-
-if __name__ == '__main__':
-    import ctypes
-    import sys
-    if sys.platform.startswith('linux'):
-        try:
-            x11 = ctypes.cdll.LoadLibrary('libX11.so')
-            x11.XInitThreads()
-        except:
-            print("Warning: failed to XInitThreads()")
-
 from PyQt5 import Qt
-from PyQt5.QtCore import QObject, pyqtSlot
 from gnuradio import qtgui
-from gnuradio.filter import firdes
-import sip
 from gnuradio import analog
 from gnuradio import audio
 from gnuradio import blocks
 from gnuradio import filter
+from gnuradio.filter import firdes
 from gnuradio import gr
 from gnuradio.fft import window
 import sys
 import signal
+from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
 import htra_source
+import sip
 
 
-
-from gnuradio import qtgui
 
 class FM_demod(gr.top_block, Qt.QWidget):
 
@@ -53,8 +40,8 @@ class FM_demod(gr.top_block, Qt.QWidget):
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
-        except:
-            pass
+        except BaseException as exc:
+            print(f"Qt GUI: Could not set Icon: {str(exc)}", file=sys.stderr)
         self.top_scroll_layout = Qt.QVBoxLayout()
         self.setLayout(self.top_scroll_layout)
         self.top_scroll = Qt.QScrollArea()
@@ -74,8 +61,8 @@ class FM_demod(gr.top_block, Qt.QWidget):
                 self.restoreGeometry(self.settings.value("geometry").toByteArray())
             else:
                 self.restoreGeometry(self.settings.value("geometry"))
-        except:
-            pass
+        except BaseException as exc:
+            print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
 
         ##################################################
         # Variables
@@ -88,32 +75,13 @@ class FM_demod(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
+
         self._sample_rate_range = Range(110000000, 130000000, 1, 122880000, 200)
         self._sample_rate_win = RangeWidget(self._sample_rate_range, self.set_sample_rate, "Sample_rate", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._sample_rate_win)
         self._reference_level_range = Range(-50, 23, 1, -30, 200)
         self._reference_level_win = RangeWidget(self._reference_level_range, self.set_reference_level, "Reference_Level", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._reference_level_win)
-        # Create the options list
-        self._decimate_factor_options = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
-        # Create the labels list
-        self._decimate_factor_labels = map(str, self._decimate_factor_options)
-        # Create the combo box
-        self._decimate_factor_tool_bar = Qt.QToolBar(self)
-        self._decimate_factor_tool_bar.addWidget(Qt.QLabel("Decimate_Factor" + ": "))
-        self._decimate_factor_combo_box = Qt.QComboBox()
-        self._decimate_factor_tool_bar.addWidget(self._decimate_factor_combo_box)
-        for _label in self._decimate_factor_labels: self._decimate_factor_combo_box.addItem(_label)
-        self._decimate_factor_callback = lambda i: Qt.QMetaObject.invokeMethod(self._decimate_factor_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._decimate_factor_options.index(i)))
-        self._decimate_factor_callback(self.decimate_factor)
-        self._decimate_factor_combo_box.currentIndexChanged.connect(
-            lambda i: self.set_decimate_factor(self._decimate_factor_options[i]))
-        # Create the radio buttons
-        self.top_grid_layout.addWidget(self._decimate_factor_tool_bar, 2, 0, 1, 1)
-        for r in range(2, 3):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.top_grid_layout.setColumnStretch(c, 1)
         self._center_freq_range = Range(9000, 6300000000, 100, 97500000, 200)
         self._center_freq_win = RangeWidget(self._center_freq_range, self.set_center_freq, "Center_Frequency", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._center_freq_win)
@@ -126,7 +94,7 @@ class FM_demod(gr.top_block, Qt.QWidget):
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
             center_freq, #fc
-            sample_rate/decimate_factor, #bw
+            (sample_rate/decimate_factor), #bw
             "", #name
             1, #number of inputs
             None # parent
@@ -161,13 +129,13 @@ class FM_demod(gr.top_block, Qt.QWidget):
             1024, #size
             window.WIN_BLACKMAN, #wintype
             center_freq, #fc
-            sample_rate/decimate_factor, #bw
+            (sample_rate/decimate_factor), #bw
             "", #name
             1,
             None # parent
         )
         self.qtgui_freq_sink_x_0.set_update_time(0.10)
-        self.qtgui_freq_sink_x_0.set_y_axis(-140, 10)
+        self.qtgui_freq_sink_x_0.set_y_axis((-140), 10)
         self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
         self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_AUTO, 0.0, 0, "")
         self.qtgui_freq_sink_x_0.enable_autoscale(False)
@@ -199,7 +167,7 @@ class FM_demod(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
-        self.htra_source_0 = htra_source.htra_source(center_freq, sample_rate, decimate_factor, reference_level)
+        self.htra_source_0 = htra_source.htra_source(center_freq, sample_rate, htra_source.DecimationFactor.DECIM_64, reference_level)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(0.3)
         self.audio_sink_0 = audio.sink(48000, '', True)
         self.analog_fm_demod_cf_0 = analog.fm_demod_cf(
@@ -209,7 +177,7 @@ class FM_demod(gr.top_block, Qt.QWidget):
         	audio_pass=15000,
         	audio_stop=16000,
         	gain=1.0,
-        	tau=75e-6,
+        	tau=(75e-6),
         )
 
 
@@ -238,8 +206,8 @@ class FM_demod(gr.top_block, Qt.QWidget):
     def set_sample_rate(self, sample_rate):
         self.sample_rate = sample_rate
         self.htra_source_0.set_sample_rate(self.sample_rate)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.center_freq, self.sample_rate/self.decimate_factor)
-        self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, self.sample_rate/self.decimate_factor)
+        self.qtgui_freq_sink_x_0.set_frequency_range(self.center_freq, (self.sample_rate/self.decimate_factor))
+        self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, (self.sample_rate/self.decimate_factor))
 
     def get_reference_level(self):
         return self.reference_level
@@ -253,10 +221,8 @@ class FM_demod(gr.top_block, Qt.QWidget):
 
     def set_decimate_factor(self, decimate_factor):
         self.decimate_factor = decimate_factor
-        self._decimate_factor_callback(self.decimate_factor)
-        self.htra_source_0.set_decim_factor(self.decimate_factor)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.center_freq, self.sample_rate/self.decimate_factor)
-        self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, self.sample_rate/self.decimate_factor)
+        self.qtgui_freq_sink_x_0.set_frequency_range(self.center_freq, (self.sample_rate/self.decimate_factor))
+        self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, (self.sample_rate/self.decimate_factor))
 
     def get_center_freq(self):
         return self.center_freq
@@ -264,8 +230,8 @@ class FM_demod(gr.top_block, Qt.QWidget):
     def set_center_freq(self, center_freq):
         self.center_freq = center_freq
         self.htra_source_0.set_center_freq(self.center_freq)
-        self.qtgui_freq_sink_x_0.set_frequency_range(self.center_freq, self.sample_rate/self.decimate_factor)
-        self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, self.sample_rate/self.decimate_factor)
+        self.qtgui_freq_sink_x_0.set_frequency_range(self.center_freq, (self.sample_rate/self.decimate_factor))
+        self.qtgui_waterfall_sink_x_0.set_frequency_range(self.center_freq, (self.sample_rate/self.decimate_factor))
 
 
 
