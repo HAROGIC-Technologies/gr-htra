@@ -1,5 +1,7 @@
 # Open Source Usage Notice
 
+---
+
 The open-source projects, code snippets, and related files contained in this sample folder are obtained from their original open-source communities or repositories.
 This sample is provided solely for **Reference and Demonstration** purposes and is not intended for any commercial use.
 
@@ -100,6 +102,8 @@ Optimized parameters are provided and can be used directly. For better performan
 - After configuring the gr-adsb project, if you want to view flight paths on the web page, please note:  
   - The gr-adsb `gr-adsb/web/static/index.html` uses `socket.io` v2.0.0 by default. On newer Ubuntu systems, upgrade to v4.6.1 to display flight paths correctly.  
 - It is recommended to use an antenna with good gain performance in the 1090 MHz band.  
+
+**Demo Execution**
 
 ---
 
