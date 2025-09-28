@@ -89,7 +89,7 @@ In addition to the common parameters, the following must be configured:
 
 ---
 
-## 6. adsb_rx.grc
+## 6. ADSB_rx.grc
 
 **Purpose**  
 Demodulate flight signals and plot flight paths on a web page.
@@ -107,7 +107,7 @@ Optimized parameters are provided and can be used directly. For better performan
 
 ---
 
-## 7. htra_dab_receiver.grc
+## 7. DAB_receiver.grc
 
 **Purpose**  
 DAB (Digital Audio Broadcasting) signal demodulation.
