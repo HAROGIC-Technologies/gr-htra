@@ -53,7 +53,7 @@ sudo make install
 - Add the `HTRA:IQ Source` block to flowgraphs in the GNU Radio Companion. It is located under the HTRA category.
   - See `examples` folder for demos.
 <p align="center">
-  <a href="Examples/FM_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/FM_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="Examples/photos/FM_demod.png" title="FM Demod Flowgraph">
+    <img src="Examples/photos/FM_demod.png" alt="FM Demod Flowgraph" width="800">
   </a>
 </p>
