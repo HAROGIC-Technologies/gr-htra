@@ -56,17 +56,18 @@ Set the center frequency according to the use case, then run. Other parameters c
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/FM_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/FM_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/FM_demod.png" title="FM Demod Flowgraph">
+    <img src="photos/FM_demod.png" alt="FM Demod Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/FM_demodresult.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/FM_demodresult.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/FM_demodresult.png" title="FM_demodresult Flowgraph">
+    <img src="photos/FM_demodresult.png" alt="FM_demodresult Flowgraph" width="800">
   </a>
 </p>
+
 ---
 
 ## 3. AM_demod.grc
@@ -79,17 +80,18 @@ Same as FM_demod. Set the center frequency according to the use case, then run.
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/AM_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/AM_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/AM_demod.png" title="AM_demod Flowgraph">
+    <img src="photos/AM_demod.png" alt="AM_demod Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/AM_demodresult.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/AM_demodresult.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/AM_demodresult.png" title="AM_demod Flowgraph">
+    <img src="photos/AM_demodresult.png" alt="AM_demod Flowgraph" width="800">
   </a>
 </p>
+
 ---
 
 ## 4. QPSK_demod.grc
@@ -110,17 +112,18 @@ In addition to the common parameters, the following must be configured:
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/QPSK_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/QPSK_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/QPSK_demod.png" title="QPSK_demod Flowgraph">
+    <img src="photos/QPSK_demod.png" alt="QPSK_demod Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/QPSK_demodresult.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/QPSK_demodresult.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/QPSK_demodresult.png" title="QPSK_demodresult Flowgraph">
+    <img src="photos/QPSK_demodresult.png" alt="QPSK_demodresult Flowgraph" width="800">
   </a>
 </p>
+
 ---
 
 ## 5. QAM_demod.grc
@@ -142,17 +145,18 @@ In addition to the common parameters, the following must be configured:
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/QAM_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/QAM_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/QAM_demod.png" title="QAM_demod Flowgraph">
+    <img src="photos/QAM_demod.png" alt="QAM_demod Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/QAM_demodresult.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/QAM_demodresult.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/QAM_demodresult.png" title="QAM_demodresult Flowgraph">
+    <img src="photos/QAM_demodresult.png" alt="QAM_demodresult Flowgraph" width="800">
   </a>
 </p>
+
 ---
 
 ## 6. ADSB_rx.grc
@@ -171,18 +175,17 @@ Optimized parameters are provided and can be used directly. For better performan
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/ADSB_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/ADSB_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/ADSB_demod.png" title="ADSB_rx Flowgraph">
+    <img src="photos/ADSB_demod.png" alt="ADSB_rx Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/ADSB_demodresult.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/ADSB_demodresult.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/ADSB_demodresult.png" title="ADSB_demodresult Flowgraph">
+    <img src="photos/ADSB_demodresult.png" alt="ADSB_demodresult Flowgraph" width="800">
   </a>
 </p>
-**Demo Execution**
 
 ---
 
@@ -200,14 +203,14 @@ Optimized parameters are provided and can be used directly.
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/DAB_demod.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/DAB_demod.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/DAB_demod.png" title="DAB_demod Flowgraph">
+    <img src="photos/DAB_demod.png" alt="DAB_demod Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/DAB_demodresult.png" title="FM Demod Flowgraph">
-    <img src="Examples/photos/DAB_demodresult.png" alt="FM Demod Flowgraph" width="800">
+  <a href="photos/DAB_demodresult.png" title="DAB_demodresult Flowgraph">
+    <img src="photos/DAB_demodresult.png" alt="DAB_demodresult Flowgraph" width="800">
   </a>
 </p>
