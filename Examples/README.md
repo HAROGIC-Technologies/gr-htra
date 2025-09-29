@@ -30,6 +30,11 @@ Acquire basic IQ data.
 Configure the parameters as needed. then run. Notes:  
 - The decimation factor must be selected in the `HTRA:IQ Source` module dropdown menu, and the same value must also be set in `Variable`  
 
+**grc**
+
+
+**Demo Execution**
+
 ---
 
 ## 2. FM_demod.grc
