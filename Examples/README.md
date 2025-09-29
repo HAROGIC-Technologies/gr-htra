@@ -32,15 +32,15 @@ Configure the parameters as needed. then run. Notes:
 
 **grc**
 <p align="center">
-  <a href="photos/IQ_Streaming.png" title="IQ_Streaming Flowgraph">
-    <img src="photos/IQ_Streaming.png" alt="IQ_Streaming Flowgraph" width="800">
+  <a href="photos/IQ_streaming.png" title="IQ_streaming Flowgraph">
+    <img src="photos/IQ_streaming.png" alt="IQ_streaming Flowgraph" width="800">
   </a>
 </p>
 
 **Demo Execution**
 <p align="center">
-  <a href="Examples/photos/IQ_Streamingresult.png" title="IQ_Streamingresult Flowgraph">
-    <img src="Examples/photos/IQ_Streamingresult.png" alt="IQ_Streamingresult Flowgraph" width="800">
+  <a href="photos/IQ_streamingresult.png" title="IQ_streamingresult Flowgraph">
+    <img src="photos/IQ_streamingresult.png" alt="IQ_streamingresult Flowgraph" width="800">
   </a>
 </p>
 ---
