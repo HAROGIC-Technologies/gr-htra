@@ -32,8 +32,8 @@ Configure the parameters as needed. then run. Notes:
 
 **grc**
 <p align="center">
-  <a href="Examples/photos/IQ_Streaming.png" title="IQ_Streaming Flowgraph">
-    <img src="Examples/photos/IQ_Streaming.png" alt="IQ_Streaming Flowgraph" width="800">
+  <a href="photos/IQ_Streaming.png" title="IQ_Streaming Flowgraph">
+    <img src="photos/IQ_Streaming.png" alt="IQ_Streaming Flowgraph" width="800">
   </a>
 </p>
 
