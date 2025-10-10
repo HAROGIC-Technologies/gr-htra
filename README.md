@@ -23,30 +23,32 @@ A GNU Radio source module for HTRA SDR devices, providing real-time IQ data stre
   ```
 
 ## Installation
-1. Install [**HTRA API SDK Linux**](https://www.harogic.com/05561-apis/)
-  - Use the Linux SDK included on the USB drive provided with your purchase, or download the latest Linux SDK from the official website.
-   Then, in that folder, run:
-```bash
-sudo sh install_htraapi_lib.sh
-```
-2. Clone the repository
+1. Clone the repository
 ```bash
 git clone https://github.com/HAROGIC-Technologies/gr-htra.git
+```
+2. Build the Module
+   - Build the module with CMake:
+```bash
+cd gr-htra
+mkdir build
+cd build
+sudo cmake ..
+sudo make install
 ```
 3. Copy the calibration file(s)
   - Copy the calibration file(s) for your device from the included USB drive into the `gr-htra/CalFile` folder.
   - Then install the calibration file(s) system-wide.
 ```bash
-cd gr-htra
-sudo sh install_lib.sh
+cd ..
+sudo sh CopyCalFile.sh
 ```
-4. Build the Module
-   - Build the module with CMake:
+4. After the installation is complete, you can open **GNU Radio Companion** and use the HTRA OOT module. Example usage can be found in the **Examples** folder.
+
+## Uninstallation
+If you need to uninstall the HTRA OOT module along with all related configuration files, simply run the following script in the **gr-htra** folder:
 ```bash
-mkdir build
-cd build
-cmake ..
-sudo make install
+sudo sh uninstall.sh
 ```
 
 ## Usage
