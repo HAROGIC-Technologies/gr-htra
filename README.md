@@ -8,7 +8,7 @@ A GNU Radio source module for HTRA SDR devices, providing real-time IQ data stre
 
 ## Prerequisites
 1. Install [**GNU Radio**](https://wiki.gnuradio.org/index.php/InstallingGR)
-- GNU Radio 3.9 or above is required.
+  - GNU Radio 3.9 or above is required.
 
 3.  Before building, you must have the following installed on your system:
    - **CMake**: `cmake`  
