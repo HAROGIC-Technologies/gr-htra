@@ -28,7 +28,7 @@ A GNU Radio source module for HTRA SDR devices, providing real-time IQ data stre
 git clone https://github.com/HAROGIC-Technologies/gr-htra.git
 ```
 2. Build the Module
-   - Build the module with CMake:
+- Build the module with CMake:
 ```bash
 cd gr-htra
 mkdir build
