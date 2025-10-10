@@ -7,10 +7,10 @@ A GNU Radio source module for HTRA SDR devices, providing real-time IQ data stre
 - Native USB 3.0 support
 
 ## Prerequisites
-1. Install [**GNU Radio**](https://wiki.gnuradio.org/index.php/InstallingGR)  
-   - GNU Radio 3.9 or above is required.
+1. Install [**GNU Radio**](https://wiki.gnuradio.org/index.php/InstallingGR)
+- GNU Radio 3.9 or above is required.
 
-2.  Before building, you must have the following installed on your system:
+3.  Before building, you must have the following installed on your system:
    - **CMake**: `cmake`  
    - **C++ Compiler**: `g++`  
    - **Git**: `git`  
