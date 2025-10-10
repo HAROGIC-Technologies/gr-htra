@@ -3,7 +3,7 @@ A GNU Radio source module for HTRA SDR devices, providing real-time IQ data stre
 
 ## Requirements
 - 64-bit Linux operating system  
-  - Tested on Ubuntu 20.04 and above
+  - Tested on Ubuntu 22.04 and above
 - Native USB 3.0 support
 
 ## Prerequisites
