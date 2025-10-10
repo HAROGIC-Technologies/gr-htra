@@ -38,7 +38,7 @@ sudo make install
 ```
 3. Copy the calibration file(s)
   - Copy the calibration file(s) for your device from the included USB drive into the `gr-htra/CalFile` folder.
-  - Then install the calibration file(s) system-wide.
+  - Then run the following command to return to the **gr-htra** folder and install these calibration files system-wide:
 ```bash
 cd ..
 sudo sh CopyCalFile.sh
