@@ -17,11 +17,11 @@ parameters:
   - id: sample_rate
     label: Samplerate (Hz)
     dtype: float
-    default: 122880000
+    default: 125000000
   - id: decim_factor
     label: Decimation Factor
     dtype: enum
-    default: DECIM_2
+    default: DECIM_32
     options:
       - DECIM_1
       - DECIM_2
