@@ -21,7 +21,7 @@ For any actual use of the referenced open-source projects, please review and com
 Acquire basic IQ data.
 
 **Parameter Description**  
-- Native sample rate: The parameter can be set in the range of 110 MHz to 130 MHz, with a step size of 1 kHz.
+- Native sample rate: The parameter can be set in the range of 110 MHz to 130 MHz, with a minimum step size of 1 kHz.
 - Center frequency: The parameter's configurable values depend on the device's acquisition frequency band.
 - Decimation factor: The decimation factor must be set to a power of 2 and is selectable via the dropdown menu in the module.
 - Reference level: The parameter can be set in the range of -50 to 23 dBm.  
