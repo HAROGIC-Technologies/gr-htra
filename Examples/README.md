@@ -214,3 +214,58 @@ Optimized parameters are provided and can be used directly.
     <img src="photos/DAB_demodresult.png" alt="DAB_demodresult Flowgraph" width="800">
   </a>
 </p>
+
+---
+
+## 8. WLAN_receiver.grc
+
+**Purpose** 
+WLAN signal demodulation in the air
+
+**Parameter Description**  
+Optimized parameters are provided and can be used directly.  
+
+**Usage Instructions**  
+- This sample depends on the open-source project [gr-ieee802-11](https://github.com/bastibl/gr-ieee802-11), **maint-3.10** branch.
+  Before using this example, please install the project and its dependencies according to the **gr-ieee802-11** README to avoid missing modules.
+
+- When running on **Ubuntu system**, it is necessary to adjust the **maximum shared memory of the system**. 
+  This is because the **Transmitter** block in **gr-ieee802-11** uses the **Tagged Stream** mechanism, which buffers the entire frame in memory before processing. 
+  Since the dafault shared memory size in Ubuntu is small, this may lead to insufficient buffer space.
+  To fix this, execute the following command:
+
+  ```bash
+  sudo sysctl -w kernel.shmmax=2147483648
+  ```
+
+- After completing the above configuration, you can run this sample normally to perform WLAN signal acquisition and demodulation.
+
+**grc**
+<p align="center">
+  <a href="photos/WLAN_demod.png" title="WLAN_demod Flowgraph">
+    <img src="photos/WLAN_demod.png" alt="WLAN_demod Flowgraph" width="800">
+  </a>
+</p>
+
+**Demo Execution**
+- Constellation
+<p align="center">
+  <a href="photos/WLAN_demodresult1.png" title="WLAN_demodresult1 Flowgraph">
+    <img src="photos/WLAN_demodresult1.png" alt="WLAN_demodresult1 Flowgraph" width="800">
+  </a>
+</p>
+
+- Demodulated data output
+<p align="center">
+  <a href="photos/WLAN_demodresult2.png" title="WLAN_demodresult2 Flowgraph">
+    <img src="photos/WLAN_demodresult2.png" alt="WLAN_demodresult2 Flowgraph" width="800">
+  </a>
+</p>
+
+- wireshark
+<p align="center">
+  <a href="photos/WLAN_demodresult3.png" title="WLAN_demodresult3 Flowgraph">
+    <img src="photos/WLAN_demodresult3.png" alt="WLAN_demodresult3 Flowgraph" width="800">
+  </a>
+</p>
+---
