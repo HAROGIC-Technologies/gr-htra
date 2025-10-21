@@ -191,7 +191,7 @@ Optimized parameters are provided and can be used directly. For better performan
 
 ## 7. DAB_receiver.grc
 
-**Purpose**  
+**Purpose**
 DAB (Digital Audio Broadcasting) signal demodulation.
 
 **Parameter Description**  
@@ -219,7 +219,7 @@ Optimized parameters are provided and can be used directly.
 
 ## 8. WLAN_receiver.grc
 
-**Purpose** 
+**Purpose**
 WLAN signal demodulation in the air
 
 **Parameter Description**  
