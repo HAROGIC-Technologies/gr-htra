@@ -180,13 +180,6 @@ Optimized parameters are provided and can be used directly. For better performan
   </a>
 </p>
 
-**Demo Execution**
-<p align="center">
-  <a href="photos/ADSB_demodresult.png" title="ADSB_demodresult Flowgraph">
-    <img src="photos/ADSB_demodresult.png" alt="ADSB_demodresult Flowgraph" width="800">
-  </a>
-</p>
-
 ---
 
 ## 7. DAB_receiver.grc
