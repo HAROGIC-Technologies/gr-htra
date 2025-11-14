@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<block>
+  <name>HTRA:IQ Source</name>
+  <key>htra_htra_source</key>
+  <category>[HTRA]</category>
+  <import>import htra</import>
+  <make>htra.htra_source("${device_type}",${device_num},"${device_ip}",$center_freq, $sample_rate, $decim_factor, $ref_level,"${data_format}")</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+
+  <callback>set_center_freq($center_freq)</callback>
+  <callback>set_sample_rate($sample_rate)</callback>
+  <callback>set_ref_level($ref_level)</callback>
+
+<param>
+    <name>Physical Interface</name>
+    <key>device_type</key>
+    <value>USB</value>
+    <type>enum</type>
+
+    <option>
+        <name>USB</name>
+        <key>USB</key>
+    </option>
+
+    <option>
+        <name>ETH</name>
+        <key>ETH</key>
+    </option>
+</param>
+
+<param>
+    <name>Device Number (USB)</name>
+    <key>device_num</key>
+    <value>0</value>
+    <type>int</type>
+</param>
+
+<param>
+    <name>IP Address (ETH)</name>
+    <key>device_ip</key>
+    <value>192.168.1.100</value>
+    <type>string</type>
+</param>
+
+  <param>
+    <name>Center Freq (Hz)</name>
+    <key>center_freq</key>
+    <value>1000000000</value>
+    <type>real</type>
+  </param>
+  <param>
+    <name>Sample Rate (Hz)</name>
+    <key>sample_rate</key>
+    <value>125000000</value>
+    <type>real</type>
+  </param>
+<param>
+    <name>Decimation Factor</name>
+    <key>decim_factor</key>
+    <value>32</value> 
+    <type>int</type>
+
+    <option>
+        <name>1</name>
+        <key>1</key>
+    </option>
+    <option>
+        <name>2</name>
+        <key>2</key>
+    </option>
+    <option>
+        <name>4</name>
+        <key>4</key>
+    </option>
+    <option>
+        <name>8</name>
+        <key>8</key>
+    </option>
+    <option>
+        <name>16</name>
+        <key>16</key>
+    </option>
+    <option>
+        <name>32</name>
+        <key>32</key>
+    </option>
+    <option>
+        <name>64</name>
+        <key>64</key>
+    </option>
+    <option>
+        <name>128</name>
+        <key>128</key>
+    </option>
+    <option>
+        <name>256</name>
+        <key>256</key>
+    </option>
+    <option>
+        <name>512</name>
+        <key>512</key>
+    </option>
+    <option>
+        <name>1024</name>
+        <key>1024</key>
+    </option>
+    <option>
+        <name>2048</name>
+        <key>2048</key>
+    </option>
+    <option>
+        <name>4096</name>
+        <key>4096</key>
+    </option>
+</param>
+
+
+
+  <param>
+    <name>Reference Level</name>
+    <key>ref_level</key>
+    <value>0</value>
+    <type>real</type>
+  </param>
+
+<param>
+    <name>Data Format</name>
+    <key>data_format</key>
+    <value>Complex16bit</value>
+    <type>enum</type>
+    
+
+    <option>
+        <name>8bit</name>
+        <key>Complex8bit</key>
+    </option>
+
+    <option>
+        <name>16bit</name>
+        <key>Complex16bit</key>
+    </option>
+
+    <option>
+        <name>32bit</name>
+        <key>Complex32bit</key>
+    </option>
+</param>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>

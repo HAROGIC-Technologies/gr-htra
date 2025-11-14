@@ -1,12 +1,11 @@
-
 #include "htra_source_impl.h"
 #include <gnuradio/io_signature.h>
 #include <iostream>
 #include <cstring>
-#include <atomic>
+#include <boost/make_shared.hpp>
 
 namespace gr {
-namespace htra_device {
+namespace htra {
 
 // helper: trim whitespace
 static inline std::string trim(const std::string &s) {
@@ -28,13 +27,13 @@ static inline std::string strip_surrounding_quotes(const std::string &s) {
 }
 
 htra_source::sptr htra_source::make(
-    const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level,const std::string& data_format)
+    const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, int decim_factor, float ref_level,const std::string& data_format)
 {
-    return gnuradio::make_block_sptr<htra_source_impl>(
-        device_type, device_num, device_ip, center_freq, sample_rate, decim_factor, ref_level, data_format);
+    return htra_source::sptr(new htra_source_impl(
+        device_type, device_num, device_ip, center_freq, sample_rate, decim_factor, ref_level, data_format));
 }
 
-htra_source_impl::htra_source_impl(const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level,const std::string& data_format)
+htra_source_impl::htra_source_impl(const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, int decim_factor, float ref_level,const std::string& data_format)
     : gr::sync_block("htra_source",
           gr::io_signature::make(0, 0, 0),
           gr::io_signature::make(1, 1, sizeof(gr_complex))),
@@ -49,9 +48,7 @@ htra_source_impl::htra_source_impl(const std::string& device_type,int device_num
       d_resyncing(false),
       d_device_num(device_num)
 {
-    //Initialize Device
-    d_boot_profile.DevicePowerSupply = USBPortAndPowerPort; 
-
+    d_boot_profile.DevicePowerSupply = USBPortAndPowerPort;
     //Dynamically configure according to the device_type parameter passed from GRC.
     if (device_type == "USB") {
 	d_boot_profile.PhysicalInterface = USB;
@@ -79,12 +76,9 @@ htra_source_impl::htra_source_impl(const std::string& device_type,int device_num
     } else {
 	throw std::runtime_error("Unknown device type");
     }
-
-    
-    //Initialize IQS Profile
     int Status = IQS_ProfileDeInit(&d_device, &IQS_ProfileIn);
     std::cerr << "IQS_ProfileDeInit status: " << Status << std::endl;
-    
+
     IQS_ProfileIn.CenterFreq_Hz = d_center_freq;
     IQS_ProfileIn.RefLevel_dBm = d_ref_level;
     IQS_ProfileIn.DecimateFactor = static_cast<int>(d_decim_factor);
@@ -99,30 +93,34 @@ htra_source_impl::htra_source_impl(const std::string& device_type,int device_num
         throw std::runtime_error("Unsupported data format");
     }
 
-    
     IQS_ProfileIn.TriggerSource = Bus;
     IQS_ProfileIn.TriggerMode = Adaptive;
     IQS_ProfileIn.NativeIQSampleRate_SPS = d_sample_rate;
-    IQS_ProfileIn.BusTimeout_ms=5000;
+    IQS_ProfileIn.BusTimeout_ms = 5000;
 
     Status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
     std::cerr << "Native Sampling Rate: " << d_profile_out.NativeIQSampleRate_SPS << std::endl;
     std::cerr << "DecimateFactor: " << d_profile_out.DecimateFactor << std::endl;
     std::cerr << "IQSampleRate: " << d_stream_info.IQSampleRate << std::endl;
-    
 
-    // Allocate Ring Buffer
-    d_ring_buffer.resize(32484*128); 
-    
-    //Trigger Start of Acquisition
+    d_ring_buffer.resize(32484*128);
+
     Status = IQS_BusTriggerStart(&d_device);
     std::cerr << "IQS_BusTriggerStart status: " << Status << std::endl;
 
-    // Start data acquisition stream
     activateStream();
 }
 
-//Reconfig
+htra_source_impl::~htra_source_impl()
+{
+    if (d_rx_thread_running) {
+        d_rx_thread_running = false;
+        d_buffer_cv.notify_all();
+        d_rx_thread.join();
+    }
+    Device_Close(&d_device);
+}
+
 void htra_source_impl::set_sample_rate(float rate)
 {
     {
@@ -134,13 +132,13 @@ void htra_source_impl::set_sample_rate(float rate)
         d_buffer_cv.notify_all();
     }
 
-
     d_sample_rate = rate;
     IQS_ProfileIn.NativeIQSampleRate_SPS = d_sample_rate;
 
     int status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
-    std::cerr << "[Native Sampling Rate] Reconfig status: " << status << std::endl;
-    std::cerr << "Native Sampling Rate: " << d_profile_out.NativeIQSampleRate_SPS << std::endl;
+    std::cerr << "[Reconfig set_sample_rate] status: " << status
+              << " NativeSamplingRate: " << d_profile_out.NativeIQSampleRate_SPS << std::endl;
+
     IQS_BusTriggerStart(&d_device);
 
     {
@@ -149,7 +147,6 @@ void htra_source_impl::set_sample_rate(float rate)
     }
     d_buffer_cv.notify_all();
 }
-
 
 void htra_source_impl::set_center_freq(float freq)
 {
@@ -166,8 +163,9 @@ void htra_source_impl::set_center_freq(float freq)
     IQS_ProfileIn.CenterFreq_Hz = d_center_freq;
 
     int status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
-    std::cerr << "[CenterFreq] Reconfig status: " << status << std::endl;
-    std::cerr << "d_profile_out.CenterFreq_Hz: " << d_profile_out.CenterFreq_Hz << std::endl;
+    std::cerr << "[Reconfig set_center_freq] status: " << status
+              << " CenterFreq_Hz: " << d_profile_out.CenterFreq_Hz << std::endl;
+
     IQS_BusTriggerStart(&d_device);
 
     {
@@ -176,7 +174,6 @@ void htra_source_impl::set_center_freq(float freq)
     }
     d_buffer_cv.notify_all();
 }
-
 
 void htra_source_impl::set_ref_level(float level)
 {
@@ -193,35 +190,9 @@ void htra_source_impl::set_ref_level(float level)
     IQS_ProfileIn.RefLevel_dBm = d_ref_level;
 
     int status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
-    std::cerr << "[RefLevel] Reconfig status: " << status << std::endl;
-    std::cerr << "d_profile_out.RefLevel_dBm: " << d_profile_out.RefLevel_dBm << std::endl;
-    status=IQS_BusTriggerStart(&d_device);
+    std::cerr << "[Reconfig set_ref_level] status: " << status
+              << " RefLevel_dBm: " << d_profile_out.RefLevel_dBm << std::endl;
 
-
-    {
-        std::lock_guard<std::mutex> lock(d_buffer_mutex);
-        d_resyncing = false;
-    }
-    d_buffer_cv.notify_all();
-}
-
-void htra_source_impl::set_decim_factor(DecimationFactor decim)
-{
-    {
-        std::lock_guard<std::mutex> lock(d_buffer_mutex);
-        d_resyncing = true;
-        d_valid_data_count = 0;
-        d_read_index = 0;
-        d_write_index = 0;
-        d_buffer_cv.notify_all();
-    }
-
-    d_decim_factor = decim;
-    IQS_ProfileIn.DecimateFactor = static_cast<int>(d_decim_factor);
-
-    int status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
-    std::cerr << "[DecimateFactor] Reconfig status: " << status << std::endl;
-    std::cerr << "d_profile_out.DecimateFactor: " << d_profile_out.DecimateFactor << std::endl;
     IQS_BusTriggerStart(&d_device);
 
     {
@@ -231,39 +202,25 @@ void htra_source_impl::set_decim_factor(DecimationFactor decim)
     d_buffer_cv.notify_all();
 }
 
-
-
-
-htra_source_impl::~htra_source_impl()
-{
-    if (d_rx_thread_running) {
-        d_rx_thread_running = false;
-        d_buffer_cv.notify_all();
-        d_rx_thread.join(); 
-    }
-    Device_Close(&d_device); 
-}
-
 int htra_source_impl::activateStream()
 {
-    if (d_rx_thread_running) return 0;  // Do not start if already running
+    if (d_rx_thread_running)
+        return 0;
     d_rx_thread_running = true;
     d_rx_thread = std::thread(&htra_source_impl::_rx_thread, this);
     return 0;
 }
 
-// Stop data acquisition stream
 int htra_source_impl::deactivateStream()
 {
-    if (!d_rx_thread_running) return 0; 
+    if (!d_rx_thread_running)
+        return 0;
     d_rx_thread_running = false;
-    d_buffer_cv.notify_all(); 
-    if (d_rx_thread.joinable()) {
-        d_rx_thread.join(); 
-    }
+    d_buffer_cv.notify_all();
+    if (d_rx_thread.joinable())
+        d_rx_thread.join();
     return 0;
 }
-
 
 //Data Acquisition Thread
 void htra_source_impl::_rx_thread()
@@ -426,44 +383,45 @@ void htra_source_impl::_rx_thread()
 
 	// Notify main thread that data is available
         d_buffer_cv.notify_one(); 
+    }
 }
-}
+
 int htra_source_impl::work(int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
 {
-    gr_complex* out = (gr_complex*) output_items[0];
-    // Wait for available data in the buffer before forwarding it to downstream processing modules.
+    gr_complex* out = (gr_complex*)output_items[0];
+
     std::unique_lock<std::mutex> lock(d_buffer_mutex);
-    d_buffer_cv.wait(lock, [this, noutput_items]() {return (!d_resyncing && d_valid_data_count >= noutput_items) || !d_rx_thread_running;});
+    d_buffer_cv.wait(lock, [this, noutput_items]() {
+        return (!d_resyncing && d_valid_data_count >= (size_t)noutput_items) || !d_rx_thread_running;
+    });
 
-   
-    if (!d_rx_thread_running && d_valid_data_count < noutput_items) {
-        return WORK_DONE; 
-    }
-    
-    // Retrieve data from the ring buffer and pass it to the downstream block.
-    size_t space_to_end = d_ring_buffer.size() - d_read_index;
-    if (noutput_items <= space_to_end) {
-        std::copy(d_ring_buffer.begin() + d_read_index,d_ring_buffer.begin() + d_read_index + noutput_items,out);
+    if (!d_rx_thread_running && d_valid_data_count < (size_t)noutput_items)
+        return WORK_DONE;
+
+    size_t total_samples = static_cast<size_t>(noutput_items);
+    size_t available_to_end = d_ring_buffer.size() - d_read_index;
+
+
+    if (total_samples <= available_to_end) {
+        std::copy_n(d_ring_buffer.begin() + d_read_index, total_samples, out);
     } else {
-        std::copy(d_ring_buffer.begin() + d_read_index,d_ring_buffer.end(),out);
-        std::copy(d_ring_buffer.begin(), d_ring_buffer.begin() + (noutput_items - space_to_end),out + space_to_end);
+        std::copy_n(d_ring_buffer.begin() + d_read_index, available_to_end, out);
+        std::copy_n(d_ring_buffer.begin(), total_samples - available_to_end, out + available_to_end);
     }
 
-    d_read_index = (d_read_index + noutput_items) % d_ring_buffer.size();
-    d_valid_data_count -= noutput_items;
+    d_read_index = (d_read_index + total_samples) % d_ring_buffer.size();
+    d_valid_data_count -= total_samples;
 
     return noutput_items;
 }
 
-// Convert to basic block
 gr::basic_block_sptr htra_source_impl::to_basic_block()
 {
     return shared_from_this();
 }
 
-} // namespace htra_device
+} // namespace htra
 } // namespace gr
-
 

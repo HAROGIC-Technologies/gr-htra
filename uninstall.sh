@@ -14,11 +14,11 @@ LIB_DIR="/usr/lib"
 INCLUDE_DIR="/usr/include"
 CONF_DIR="/etc"
 UDEV_DIR="/etc/udev/rules.d"
-PYTHON_DIR="/usr/local/lib/python3.10/dist-packages"
+PYTHON_DIR="/usr/local/lib/python2.7/dist-packages"
 GRC_DIR="/usr/local/share/gnuradio/grc/blocks"
 LOCAL_LIB_DIR="/usr/local/lib"
 LOCAL_INCLUDE_DIR="/usr/local/include"
-CALFILE_DIR="/bin/CalFile"
+CALFILE_DIR="/usr/bin/CalFile"
 
 # ---------------------------------------------------------
 # Removing htraapi libraries and links
@@ -29,12 +29,13 @@ sudo rm -f ${LIB_DIR}/libusb-1.0.so*
 sudo rm -f ${LIB_DIR}/libgomp.so*
 sudo rm -f ${LIB_DIR}/libliquid.so
 
+
 # ---------------------------------------------------------
 # Removing headers
 # ---------------------------------------------------------
 echo "[2/8] Removing headers..."
 sudo rm -f ${INCLUDE_DIR}/htra_api.h
-sudo rm -rf ${LOCAL_INCLUDE_DIR}/htra_device
+sudo rm -rf ${LOCAL_INCLUDE_DIR}/htra
 
 # ---------------------------------------------------------
 # Removing config files
@@ -47,9 +48,19 @@ sudo rm -f ${UDEV_DIR}/htra-cyusb.rules
 # Removing GNU Radio module and Python bindings
 # ---------------------------------------------------------
 echo "[4/8] Removing GNU Radio module and Python bindings..."
-sudo rm -f ${LOCAL_LIB_DIR}/libgnuradio-htra_device.a
-sudo rm -f ${GRC_DIR}/htra_device_htra_source.block.yml
-sudo rm -f ${PYTHON_DIR}/htra_source.cpython-310-x86_64-linux-gnu.so
+sudo rm -f ${GRC_DIR}/htra_htra_source.xml
+sudo rm -f ${LOCAL_LIB_DIR}/libgnuradio-htra-1.0.0git.so*
+sudo rm -f ${LOCAL_LIB_DIR}/libgnuradio-htra.so
+sudo rm -f ${LOCAL_LIB_DIR}/libgnuradio-htra-1.0.0git.so
+sudo rm -f ${LOCAL_LIB_DIR}/libgnuradio-htra-1.0.0git.so.0
+sudo rm -f ${PYTHON_DIR}/htra/_htra_swig.so
+sudo rm -f ${PYTHON_DIR}/htra/htra_swig.py
+sudo rm -f ${PYTHON_DIR}/htra/htra_swig.pyc
+sudo rm -f ${PYTHON_DIR}/htra/htra_swig.pyo
+sudo rm -f ${PYTHON_DIR}/htra/__init__.pyc
+sudo rm -f ${PYTHON_DIR}/htra/__init__.pyo
+sudo rm -f ${PYTHON_DIR}/htra/__init__.py
+sudo rm -rf ${PYTHON_DIR}/htra
 
 # ---------------------------------------------------------
 # Removing CalFiles
