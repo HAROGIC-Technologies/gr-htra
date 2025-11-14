@@ -22,13 +22,13 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: ''
+    title: DAB Receiver
     window_size: ''
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 8]
+    coordinate: [283, 38]
     rotation: 0
     state: enabled
 
@@ -51,7 +51,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 12.0]
+    coordinate: [459, 42]
     rotation: 0
     state: true
 - name: decimate_factor
@@ -63,7 +63,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [488, 12.0]
+    coordinate: [763, 42]
     rotation: 0
     state: true
 - name: reference_level
@@ -84,7 +84,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [616, 12.0]
+    coordinate: [891, 42]
     rotation: 0
     state: true
 - name: sample_rate
@@ -99,13 +99,13 @@ blocks:
     start: '110000000'
     step: '1'
     stop: '130000000'
-    value: 122.88e6
+    value: 125e6
     widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [336, 12.0]
+    coordinate: [611, 42]
     rotation: 0
     state: true
 - name: audio_sink_0
@@ -266,7 +266,11 @@ blocks:
     alias: ''
     center_freq: center_freq
     comment: ''
+    data_format: Complex16bit
     decim_factor: DECIM_32
+    device_ip: 192.168.1.100
+    device_num: '0'
+    device_type: USB
     maxoutbuf: '0'
     minoutbuf: '0'
     ref_level: reference_level
@@ -307,7 +311,7 @@ blocks:
     color9: '"red"'
     comment: ''
     grid: 'False'
-    gui_hint: ''
+    gui_hint: 0,1,1,1
     label1: ''
     label10: ''
     label2: ''
@@ -318,7 +322,7 @@ blocks:
     label7: ''
     label8: ''
     label9: ''
-    legend: 'True'
+    legend: 'False'
     marker1: '0'
     marker10: '0'
     marker2: '0'
@@ -329,7 +333,7 @@ blocks:
     marker7: '0'
     marker8: '0'
     marker9: '0'
-    name: '""'
+    name: Constellation
     nconnections: '1'
     size: '4096'
     style1: '0'
@@ -405,8 +409,8 @@ blocks:
     fftsize: '1024'
     freqhalf: 'True'
     grid: 'False'
-    gui_hint: ''
-    label: Relative Gain
+    gui_hint: 0,0,1,1
+    label: Power
     label1: ''
     label10: ''''''
     label2: ''''''
@@ -417,10 +421,10 @@ blocks:
     label7: ''''''
     label8: ''''''
     label9: ''''''
-    legend: 'True'
+    legend: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
-    name: '""'
+    name: Spectrum
     nconnections: '1'
     norm_window: 'False'
     showports: 'False'
@@ -429,7 +433,7 @@ blocks:
     tr_mode: qtgui.TRIG_MODE_FREE
     tr_tag: '""'
     type: complex
-    units: dB
+    units: dBm
     update_time: '0.10'
     width1: '1'
     width10: '1'
@@ -443,7 +447,7 @@ blocks:
     width9: '1'
     wintype: window.WIN_BLACKMAN_hARRIS
     ymax: '10'
-    ymin: '-140'
+    ymin: '-160'
   states:
     bus_sink: false
     bus_source: false
@@ -457,9 +461,9 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '15'
+    decim: '15625'
     fbw: '0'
-    interp: '8'
+    interp: '8192'
     maxoutbuf: '0'
     minoutbuf: '0'
     taps: '[]'

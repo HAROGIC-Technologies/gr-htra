@@ -28,7 +28,7 @@ public:
     typedef std::shared_ptr<htra_source> sptr;
 
 
-    static sptr make(float center_freq,float sample_rate,  DecimationFactor decim_factor , float ref_level);  
+    static sptr make(const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate,  DecimationFactor decim_factor , float ref_level,const std::string& data_format);  
 
   
     virtual gr::basic_block_sptr to_basic_block() = 0;

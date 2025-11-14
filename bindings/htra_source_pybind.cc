@@ -26,10 +26,14 @@ void bind_htra_source(py::module& m)
     
     py::class_<htra_source, std::shared_ptr<htra_source>>(m, "htra_source")
         .def(py::init(&htra_source::make),
+             py::arg("device_type"),
+             py::arg("device_num"),
+             py::arg("device_ip"),
              py::arg("center_freq"),
              py::arg("sample_rate"),
              py::arg("decim_factor"),
-             py::arg("ref_level"))
+             py::arg("ref_level"),
+             py::arg("data_format"))
         .def("set_sample_rate", &htra_source::set_sample_rate)
         .def("set_center_freq", &htra_source::set_center_freq)
         .def("set_ref_level", &htra_source::set_ref_level)

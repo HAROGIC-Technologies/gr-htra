@@ -22,7 +22,7 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: ''
+    title: WLAN Demod
     window_size: (1000,1000)
   states:
     bus_sink: false
@@ -273,7 +273,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [493, 339]
+    coordinate: [458, 321]
     rotation: 0
     state: enabled
 - name: blocks_delay_0
@@ -474,10 +474,13 @@ blocks:
     center_freq: freq - lo_offset
     comment: ''
     decim_factor: DECIM_4
+    device_ip: 192.168.1.100
+    device_num: '0'
+    device_type: USB
     maxoutbuf: '0'
     minoutbuf: '0'
     ref_level: '-50'
-    sample_rate: '128000000'
+    sample_rate: '125000000'
   states:
     bus_sink: false
     bus_source: false
@@ -633,7 +636,7 @@ blocks:
     label7: ''
     label8: ''
     label9: ''
-    legend: 'True'
+    legend: 'False'
     marker1: '0'
     marker10: '0'
     marker2: '0'
@@ -644,7 +647,7 @@ blocks:
     marker7: '0'
     marker8: '0'
     marker9: '0'
-    name: '""'
+    name: Constellation
     nconnections: '1'
     size: 48*10
     style1: '0'
@@ -727,7 +730,7 @@ blocks:
     label7: ''
     label8: ''
     label9: ''
-    legend: 'True'
+    legend: 'False'
     marker1: '-1'
     marker10: '-1'
     marker2: '-1'
@@ -738,9 +741,9 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '""'
+    name: PvT
     nconnections: '1'
-    size: '1024'
+    size: '4096'
     srate: samp_rate
     stemplot: 'False'
     style1: '1'
@@ -772,7 +775,7 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: Amplitude
-    ymax: '1'
+    ymax: '3'
     ymin: '-1'
     yunit: '""'
   states:
@@ -788,9 +791,9 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '8'
+    decim: '25'
     fbw: '0'
-    interp: '5'
+    interp: '16'
     maxoutbuf: '0'
     minoutbuf: '0'
     taps: '[]'

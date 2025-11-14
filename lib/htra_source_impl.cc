@@ -8,14 +8,33 @@
 namespace gr {
 namespace htra_device {
 
-htra_source::sptr htra_source::make(
-    float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level)
-{
-    return gnuradio::make_block_sptr<htra_source_impl>(
-        center_freq, sample_rate, decim_factor, ref_level);
+// helper: trim whitespace
+static inline std::string trim(const std::string &s) {
+    size_t start = s.find_first_not_of(" \t\n\r");
+    if (start == std::string::npos) return "";
+    size_t end = s.find_last_not_of(" \t\n\r");
+    return s.substr(start, end - start + 1);
 }
 
-htra_source_impl::htra_source_impl(float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level)
+// helper: strip surrounding single or double quotes if present
+static inline std::string strip_surrounding_quotes(const std::string &s) {
+    if (s.size() >= 2) {
+        if ((s.front() == '\'' && s.back() == '\'') ||
+            (s.front() == '\"' && s.back() == '\"')) {
+            return s.substr(1, s.size() - 2);
+        }
+    }
+    return s;
+}
+
+htra_source::sptr htra_source::make(
+    const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level,const std::string& data_format)
+{
+    return gnuradio::make_block_sptr<htra_source_impl>(
+        device_type, device_num, device_ip, center_freq, sample_rate, decim_factor, ref_level, data_format);
+}
+
+htra_source_impl::htra_source_impl(const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, DecimationFactor decim_factor, float ref_level,const std::string& data_format)
     : gr::sync_block("htra_source",
           gr::io_signature::make(0, 0, 0),
           gr::io_signature::make(1, 1, sizeof(gr_complex))),
@@ -27,25 +46,60 @@ htra_source_impl::htra_source_impl(float center_freq,float sample_rate, Decimati
       d_valid_data_count(0),
       d_read_index(0),
       d_write_index(0),
-      d_resyncing(false)
+      d_resyncing(false),
+      d_device_num(device_num)
 {
     //Initialize Device
-    BootProfile_TypeDef BootProfile;
-    BootInfo_TypeDef BootInfo;
-    BootProfile.DevicePowerSupply = USBPortAndPowerPort;
-    BootProfile.PhysicalInterface = USB;
+    d_boot_profile.DevicePowerSupply = USBPortAndPowerPort; 
 
-    int Status = Device_Open(&d_device, 0, &BootProfile, &BootInfo);
-    std::cerr << "Device opened with status: " << Status << std::endl;
+    //Dynamically configure according to the device_type parameter passed from GRC.
+    if (device_type == "USB") {
+	d_boot_profile.PhysicalInterface = USB;
+	int Status = Device_Open(&d_device, d_device_num, &d_boot_profile, &d_boot_info);
+	std::cerr << "USB device opened with status: " << Status << std::endl;
+    } else if (device_type == "ETH") {
+	d_boot_profile.PhysicalInterface = ETH;
+	d_boot_profile.ETH_IPVersion = IPv4;
+	d_boot_profile.ETH_RemotePort = 5000;
+	d_boot_profile.ETH_ReadTimeOut = 5000;
+
+	std::string ip_clean = trim(device_ip);
+	ip_clean = strip_surrounding_quotes(ip_clean);
+	int ip1, ip2, ip3, ip4;
+	if (sscanf(ip_clean.c_str(), "%d.%d.%d.%d", &ip1, &ip2, &ip3, &ip4) != 4) {
+    	throw std::runtime_error("Invalid IP address format");
+	}
+	d_boot_profile.ETH_IPAddress[0] = ip1;
+ 	d_boot_profile.ETH_IPAddress[1] = ip2;
+	d_boot_profile.ETH_IPAddress[2] = ip3;
+	d_boot_profile.ETH_IPAddress[3] = ip4;
+
+	int Status = Device_Open(&d_device, 0, &d_boot_profile, &d_boot_info);
+	std::cerr << "ETH device opened with status: " << Status << std::endl;
+    } else {
+	throw std::runtime_error("Unknown device type");
+    }
+
     
     //Initialize IQS Profile
-    Status = IQS_ProfileDeInit(&d_device, &IQS_ProfileIn);
+    int Status = IQS_ProfileDeInit(&d_device, &IQS_ProfileIn);
     std::cerr << "IQS_ProfileDeInit status: " << Status << std::endl;
     
     IQS_ProfileIn.CenterFreq_Hz = d_center_freq;
     IQS_ProfileIn.RefLevel_dBm = d_ref_level;
     IQS_ProfileIn.DecimateFactor = static_cast<int>(d_decim_factor);
-    IQS_ProfileIn.DataFormat = Complex16bit;
+    
+    if(data_format=="Complex16bit"){
+        IQS_ProfileIn.DataFormat = Complex16bit;
+    } else if(data_format=="Complex8bit"){
+        IQS_ProfileIn.DataFormat = Complex8bit;
+    } else if(data_format=="Complex32bit"){
+        IQS_ProfileIn.DataFormat = Complex32bit;
+    } else {
+        throw std::runtime_error("Unsupported data format");
+    }
+
+    
     IQS_ProfileIn.TriggerSource = Bus;
     IQS_ProfileIn.TriggerMode = Adaptive;
     IQS_ProfileIn.NativeIQSampleRate_SPS = d_sample_rate;
@@ -58,7 +112,7 @@ htra_source_impl::htra_source_impl(float center_freq,float sample_rate, Decimati
     
 
     // Allocate Ring Buffer
-    d_ring_buffer.resize(16242*512); 
+    d_ring_buffer.resize(32484*128); 
     
     //Trigger Start of Acquisition
     Status = IQS_BusTriggerStart(&d_device);
@@ -214,7 +268,8 @@ int htra_source_impl::deactivateStream()
 //Data Acquisition Thread
 void htra_source_impl::_rx_thread()
 {
-    std::vector<std::complex<float>> buffer(16242*8);
+    const size_t BLOCKS_PER_FETCH = 8;
+    std::vector<std::complex<float>> buffer;
     int Status = 0;
     bool flag=true;
     while (d_rx_thread_running) {
@@ -229,9 +284,9 @@ void htra_source_impl::_rx_thread()
                 break;
         }
 
-        for(int t = 0 ; t < 8 ; t++){
+        for(int t = 0 ; t < BLOCKS_PER_FETCH && d_rx_thread_running ; t++){
             {
-        	std::unique_lock<std::mutex> lock(d_buffer_mutex);
+        	std::unique_lock<std::mutex>  inner_lock(d_buffer_mutex);
         	if (d_resyncing) break; 
     	    }
         
@@ -240,7 +295,25 @@ void htra_source_impl::_rx_thread()
             	std::cerr << "d_iq_stream.IQS_ScaleToV: " << d_iq_stream.IQS_ScaleToV << std::endl;
             	flag=false;
             }
-            
+            if(Status==-1){
+                std::cerr << "IQS_GetIQStream_PM1 status: " << Status << std::endl;
+                std::exit(EXIT_FAILURE);
+            }
+            if(Status==10060||Status==10054||Status==10062){
+                std::cerr << "IQS_GetIQStream_PM1 status: " << Status << std::endl;
+                Device_Close(&d_device);
+                Status = Device_Open(&d_device, d_device_num, &d_boot_profile, &d_boot_info);
+                std::cerr << "Device_Open Status: " << Status << std::endl;
+                if(Status!=0){
+                    std::exit(EXIT_FAILURE);
+                } 
+                Status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
+                std::cerr << "IQS_Configuration Status: " << Status << std::endl;
+                if(Status!=0){
+                    std::exit(EXIT_FAILURE);
+                }
+                continue;
+            }
             if (Status==-10) {
             	std::cerr << "IQS_GetIQStream_PM1 status: " << Status << std::endl;
             	// Device returns -10, indicating desync. Reset buffer:
@@ -254,7 +327,20 @@ void htra_source_impl::_rx_thread()
                 }
                 d_buffer_cv.notify_all();
 
-                IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
+                Status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
+                std::cerr << "IQS_Configuration Status: " << Status << std::endl;
+                if(Status!=0){
+                    Status = Device_Open(&d_device, d_device_num, &d_boot_profile, &d_boot_info);
+                    std::cerr << "Device_Open Status: " << Status << std::endl;
+                    if(Status!=0){
+                        std::exit(EXIT_FAILURE);
+                    }
+                    Status = IQS_Configuration(&d_device, &IQS_ProfileIn, &d_profile_out, &d_stream_info);
+                    std::cerr << "IQS_Configuration Status: " << Status << std::endl;
+                    if(Status!=0){
+                        std::exit(EXIT_FAILURE);
+                    }
+                }
                 IQS_BusTriggerStart(&d_device);
 
                 {
@@ -269,20 +355,56 @@ void htra_source_impl::_rx_thread()
             }
 
             // Store acquired data into buffer
-            int16_t* iq_data = (int16_t*)d_iq_stream.AlternIQStream;
+            size_t packetSamples = d_iq_stream.IQS_StreamInfo.PacketSamples; 
+            if (packetSamples == 0) continue;
             
+            if (t == 0) {
+                buffer.clear();
+                buffer.resize(packetSamples * BLOCKS_PER_FETCH);
+            }
 
-            for (size_t i = 0; i < d_iq_stream.IQS_StreamInfo.PacketSamples; i++) {
-                buffer[i + t * d_iq_stream.IQS_StreamInfo.PacketSamples].real(iq_data[2 * i] * d_iq_stream.IQS_ScaleToV);
-                buffer[i + t * d_iq_stream.IQS_StreamInfo.PacketSamples].imag(iq_data[2 * i + 1] * d_iq_stream.IQS_ScaleToV);
+            size_t base_idx = t * packetSamples;
+
+            switch (d_iq_stream.IQS_Profile.DataFormat) {
+                case Complex8bit: {
+                    int8_t* iq8 = reinterpret_cast<int8_t*>(d_iq_stream.AlternIQStream);
+                    for (size_t i = 0; i < packetSamples; ++i) {
+                        buffer[i + base_idx].real(iq8[2*i]*d_iq_stream.IQS_ScaleToV);
+                        buffer[i + base_idx].imag(iq8[2*i+1]*d_iq_stream.IQS_ScaleToV);
+                    }
+                    break;
+                }
+                case Complex16bit: {
+                    int16_t* iq16 = reinterpret_cast<int16_t*>(d_iq_stream.AlternIQStream);
+                    for (size_t i = 0; i < packetSamples; ++i) {
+                        buffer[i + base_idx].real(iq16[2*i]*d_iq_stream.IQS_ScaleToV);
+                        buffer[i + base_idx].imag(iq16[2*i+1]*d_iq_stream.IQS_ScaleToV);
+                    }
+                    break;
+                }
+                case Complex32bit: {
+                    int32_t* iq32 = reinterpret_cast<int32_t*>(d_iq_stream.AlternIQStream);
+                    for (size_t i = 0; i < packetSamples; ++i) {
+                        buffer[i + base_idx].real(iq32[2*i]*d_iq_stream.IQS_ScaleToV);
+                        buffer[i + base_idx].imag(iq32[2*i+1]*d_iq_stream.IQS_ScaleToV);
+                    }
+                    break;
+                }
+                default:
+                    std::cerr << "Unsupported IQ format: " << d_iq_stream.IQS_Profile.DataFormat << std::endl;
+                    continue;
             }
         }
-        
+
+
+        size_t actual_filled = buffer.size();
+        if (actual_filled == 0) continue;
+
         {
             std::lock_guard<std::mutex> lock(d_buffer_mutex);
             
 	    // When the ring buffer is full, reset read and write indices to restart from the beginning.
-            if (d_valid_data_count + buffer.size() > d_ring_buffer.size()) {
+            if (d_valid_data_count + actual_filled > d_ring_buffer.size()) {
                 std::cerr << "T";
                 d_valid_data_count = 0;
                 d_read_index = 0;
@@ -304,9 +426,8 @@ void htra_source_impl::_rx_thread()
 
 	// Notify main thread that data is available
         d_buffer_cv.notify_one(); 
-    }
 }
-
+}
 int htra_source_impl::work(int noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)

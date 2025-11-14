@@ -16,11 +16,14 @@ class htra_source_impl : public htra_source
 private:
     void* d_device;                          
     float d_center_freq, d_sample_rate, d_ref_level;
+    int d_device_num;
+    BootProfile_TypeDef d_boot_profile;
+    BootInfo_TypeDef d_boot_info;
     DecimationFactor d_decim_factor;
     IQS_Profile_TypeDef d_profile_out;    
     IQS_StreamInfo_TypeDef d_stream_info;  
     IQS_Profile_TypeDef IQS_ProfileIn;
-    IQStream_TypeDef d_iq_stream;           
+    IQStream_TypeDef d_iq_stream;       
     size_t d_valid_data_count;   // Amount of valid data in the buffer
     size_t d_read_index;         // Read index in ring buffer
     size_t d_write_index;        // Write index in ring buffer
@@ -39,7 +42,7 @@ private:
     void _rx_thread();
 
 public:
-    htra_source_impl(float center_freq,float sample_rate, DecimationFactor decim, float ref_level);
+    htra_source_impl(const std::string& device_type,int device_num,const std::string& device_ip,float center_freq,float sample_rate, DecimationFactor decim, float ref_level,const std::string& data_format);
     ~htra_source_impl();
     
     void set_sample_rate(float rate) override;

@@ -3,23 +3,42 @@ label: "HTRA: IQ Source"
 category: "[HTRA]"
 templates:
   imports: import htra_source
-  make: htra_source.htra_source(${center_freq}, ${sample_rate}, htra_source.DecimationFactor.${decim_factor}, ${ref_level})
+  make: htra_source.htra_source("${device_type}",${device_num},"${device_ip}",${center_freq}, ${sample_rate}, htra_source.DecimationFactor.${decim_factor}, ${ref_level},"${data_format}")
   callbacks:
     - set_center_freq(${center_freq})
     - set_sample_rate(${sample_rate})
     - set_decim_factor(htra_source.DecimationFactor.${decim_factor})
     - set_ref_level(${ref_level})
 parameters:
+  - id: device_type
+    label: "Physical Interface"
+    dtype: enum
+    options: ["USB", "ETH"]
+    option_labels: ["USB", "ETH"]
+    default: "USB"
+
+  - id: device_num
+    label: "Device Number"
+    dtype: int
+    default: 0
+    hide: ${'none' if device_type == 'USB' else 'all'}
+
+  - id: device_ip
+    label: "IP Address"
+    dtype: string
+    default: "192.168.1.100"
+    hide: ${'none' if device_type == 'ETH' else 'all'}
+
   - id: center_freq
     label: Center Frequency (Hz)
     dtype: float
     default: 1000000000
   - id: sample_rate
-    label: Samplerate (Hz)
+    label: Sample rate (Hz)
     dtype: float
     default: 125000000
   - id: decim_factor
-    label: Decimation Factor
+    label: Decimate Factor
     dtype: enum
     default: DECIM_32
     options:
@@ -37,7 +56,7 @@ parameters:
       - DECIM_2048
       - DECIM_4096
     option_labels:
-      - "1 (No decimation)"
+      - "1"
       - "2"
       - "4"
       - "8"
@@ -54,6 +73,18 @@ parameters:
     label: Reference Level (dBm)
     dtype: float
     default: 0
+  - id: data_format
+    label: "Data Format"
+    dtype: enum
+    default: "Complex16bit"
+    options:
+      - "Complex8bit"
+      - "Complex16bit"
+      - "Complex32bit"
+    option_labels:
+      - "8bit"
+      - "16bit"
+      - "32bit"
 inputs: []
 outputs:
   - label: out
