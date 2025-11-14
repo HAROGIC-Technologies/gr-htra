@@ -153,7 +153,7 @@ In addition to the common parameters, the following must be configured:
 **Demo Execution**
 <p align="center">
   <a href="photos/QAM_demodresult.png" title="QAM_demodresult Flowgraph">
-    <img src="photos/QAM_demodresult.png" alt="QAM_demodresult Flowgraph" width="800">
+    <img src="photos/QAM_demodresult.png" alt="QAM_demodresult Flowgraph"width="800">
   </a>
 </p>
 
