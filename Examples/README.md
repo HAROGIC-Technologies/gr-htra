@@ -21,10 +21,14 @@ For any actual use of the referenced open-source projects, please review and com
 Acquire basic IQ data.
 
 **Parameter Description**  
-- Native sample rate: The parameter can be set in the range of 110 MHz to 130 MHz, with a minimum step size of 1 kHz.
-- Center frequency: The parameter's configurable values depend on the device's acquisition frequency band.
-- Decimation factor: The decimation factor must be set to a power of 2 and is selectable via the dropdown menu in the module.
-- Reference level: The parameter can be set in the range of -50 to 23 dBm.  
+- Physical Interface: The physical interface type of the device.
+- Device Number: When the physical interface is set to USB, different devices are distinguished by the Device Number, which increases sequentially.
+- IP Address: When the physical interface is set to ETH, the device IP address must be entered for communication.
+- Center Frequency (Hz): Determined by the device.
+- Sample Rate (Hz): 110 MHz ~ 130 MHz, with a step size of 1 kHz.
+- Decimation Factor: Can only be set to powers of 2 and selected via the dropdown menu in the module.
+- Reference Level (dBm): −50 to +23 dBm.
+- Data Format: Select the data precision used during acquisition via the dropdown menu. Options include 8-bit, 16-bit, or 32-bit.
 
 **Usage Instructions**  
 Configure the parameters as needed. then run. Notes:  
