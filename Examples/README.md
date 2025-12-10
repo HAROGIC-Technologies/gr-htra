@@ -214,7 +214,7 @@ Optimized parameters are provided and can be used directly.
 
 ---
 
-## 8. WLAN_receiver.grc
+## 8. WLAN_demod.grc
 
 **Purpose**  
 WLAN signal demodulation in the air
